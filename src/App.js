@@ -1,25 +1,50 @@
-import logo from './logo.svg';
 import './App.css';
+import cytoscape from 'cytoscape';
+import dagre from 'cytoscape-dagre';
+import { useEffect, useRef } from 'react';
+import graph from './graph.json';
+
+cytoscape.use(dagre); // register dagre layout
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const containerRef = useRef();
+
+    useEffect(() => {
+        const config = {
+            container: containerRef.current,
+            layout: {
+                name: 'dagre',
+            },
+            style: [
+                {
+                    selector: "node",
+                    style: {
+                        content: "data(label)"
+                    },
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'target-arrow-shape': 'triangle',
+                        'target-arrow-color': 'black',
+                        'source-arrow-color': 'black',
+                        'line-color': '#333',
+                        'width': 1.5,
+                        'curve-style': 'bezier'
+                    }
+                }
+            ],
+            elements: graph.elements,
+        };
+
+        cytoscape(config);
+    }, []);
+
+    return (
+        <div>
+            <div ref={containerRef} style={{ height: "100vh" }} />
+        </div>
+    );
 }
 
 export default App;
